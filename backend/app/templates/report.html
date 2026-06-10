@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>Data Analysis Report</title>
+    <style>
+        body { font-family: Arial, sans-serif; margin: 2cm; }
+        h1 { color: #2c3e50; }
+        table { border-collapse: collapse; width: 100%; margin-bottom: 20px; }
+        th, td { border: 1px solid #ddd; padding: 8px; text-align: left; }
+        th { background-color: #f2f2f2; }
+        .chart { margin: 20px 0; }
+    </style>
+</head>
+<body>
+    <h1>Data Analysis Report</h1>
+    <p><strong>File:</strong> {{ filename }}</p>
+    <p><strong>Shape:</strong> {{ shape[0] }} rows × {{ shape[1] }} columns</p>
+
+    <h2>Column Information</h2>
+    <table>
+        <tr><th>Column</th><th>Type</th><th>Missing</th><th>Missing %</th></tr>
+        {% for col in columns %}
+        <tr>
+            <td>{{ col }}</td>
+            <td>{{ dtypes[col] }}</td>
+            <td>{{ missing.get(col, 0) }}</td>
+            <td>{{ missing_pct.get(col, 0) }}%</td>
+        </tr>
+        {% endfor %}
+    </table>
+
+    {% if numeric_cols %}
+    <h2>Numeric Summary</h2>
+    <table>
+        <tr>
+            <th>Column</th>
+            <th>count</th>
+            <th>mean</th>
+            <th>std</th>
+            <th>min</th>
+            <th>25%</th>
+            <th>50%</th>
+            <th>75%</th>
+            <th>max</th>
+        </tr>
+        {% for col, stats in description.items() %}
+        <tr>
+            <td>{{ col }}</td>
+            <td>{{ stats.count }}</td>
+            <td>{{ stats.mean|round(2) }}</td>
+            <td>{{ stats.std|round(2) }}</td>
+            <td>{{ stats.min }}</td>
+            <td>{{ stats['25%'] }}</td>
+            <td>{{ stats['50%'] }}</td>
+            <td>{{ stats['75%'] }}</td>
+            <td>{{ stats.max }}</td>
+        </tr>
+        {% endfor %}
+    </table>
+    {% endif %}
+
+    {% for col, data in histograms.items() %}
+    <div class="chart">
+        <h3>Histogram: {{ col }}</h3>
+        <img src="data:image/png;base64,{{ placeholder }}" alt="Histogram of {{ col }}" style="max-width:100%">
+        <p><em>Note: In PDF, please refer to frontend for interactive charts.</em></p>
+    </div>
+    {% endfor %}
+</body>
+</html>
